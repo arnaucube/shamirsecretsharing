@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/rand"
 	"math/big"
 	"syscall/js"
 
@@ -17,11 +18,11 @@ func main() {
 }
 
 func registerCallbacks() {
-	js.Global().Set("createShares", js.ValueOf(createShares))
-	js.Global().Set("lagrangeInterpolation", js.ValueOf(lagrangeInterpolation))
+	js.Global().Set("createShares", js.FuncOf(createShares))
+	js.Global().Set("lagrangeInterpolation", js.FuncOf(lagrangeInterpolation))
 }
 
-func createShares(i []js.Value) {
+func createShares(this js.Value, i []js.Value) interface{} {
 	nNeededShares, ok := new(big.Int).SetString(i[0].String(), 10)
 	if !ok {
 		println("error parsing parameter in position 0")
@@ -34,29 +35,45 @@ func createShares(i []js.Value) {
 	if !ok {
 		println("error parsing parameter in position 2")
 	}
+	bits := 2048
+	p, err := rand.Prime(rand.Reader, bits/2) // move this out from wasm, it tooks too much time
+	if err != nil {
+		println(err.Error())
+	}
 	k, ok := new(big.Int).SetString(i[3].String(), 10)
 	if !ok {
 		println("error parsing parameter in position 3")
 	}
+	println("nNeededShares", nNeededShares.String())
+	println("nShares", nShares.String())
+	println("p", p.String())
+	println("k (secret)", k.String())
 	shares, err := shamirsecretsharing.Create(nNeededShares, nShares, p, k)
 	if err != nil {
 		println("error generating the shares")
+		println(err.Error())
 	}
-	println(shares)
+	println("shares", shares)
 	sharesStr := sharesToString(shares)
-	println(sharesStr)
+	println("sharesStr", sharesStr)
+	return nil
 }
 
 func sharesToString(shares [][]*big.Int) []string {
+	var printString string
 	var s []string
 	for i := 0; i < len(shares); i++ {
 		s = append(s, shares[i][0].String())
 		s = append(s, shares[i][1].String())
+		printString = printString + "[" + shares[i][0].String() + ", " + shares[i][1].String() + "]\n"
+		println(shares[i][0].String())
+		println(shares[i][1].String())
 	}
+	js.Global().Get("document").Call("getElementById", "sharesResult").Set("innerHTML", printString)
 	return s
 }
 
-func lagrangeInterpolation(i []js.Value) {
+func lagrangeInterpolation(this js.Value, i []js.Value) interface{} {
 	p, ok := new(big.Int).SetString(i[0].String(), 10)
 	if !ok {
 		println("error parsing parameter in position 0 (p)")
@@ -81,4 +98,5 @@ func lagrangeInterpolation(i []js.Value) {
 
 	secr := shamirsecretsharing.LagrangeInterpolation(p, shares)
 	println(secr.String())
+	return nil
 }
