@@ -71,3 +71,45 @@ func unpackSharesAndI(sharesPacked [][]*big.Int) ([]*big.Int, []*big.Int) {
 	}
 	return shares, i
 }
+
+// LagrangeInterpolation calculates the secret from given shares
+func LagrangeInterpolation(sharesGiven [][]*big.Int, p *big.Int) *big.Int {
+	resultN := big.NewInt(int64(0))
+	resultD := big.NewInt(int64(0))
+
+	//unpack shares
+	sharesBigInt, sharesIBigInt := unpackSharesAndI(sharesGiven)
+
+	for i := 0; i < len(sharesBigInt); i++ {
+		lagrangeNumerator := big.NewInt(int64(1))
+		lagrangeDenominator := big.NewInt(int64(1))
+		for j := 0; j < len(sharesBigInt); j++ {
+			if sharesIBigInt[i] != sharesIBigInt[j] {
+				currLagrangeNumerator := sharesIBigInt[j]
+				currLagrangeDenominator := new(big.Int).Sub(sharesIBigInt[j], sharesIBigInt[i])
+				lagrangeNumerator = new(big.Int).Mul(lagrangeNumerator, currLagrangeNumerator)
+				lagrangeDenominator = new(big.Int).Mul(lagrangeDenominator, currLagrangeDenominator)
+			}
+		}
+		numerator := new(big.Int).Mul(sharesBigInt[i], lagrangeNumerator)
+		quo := new(big.Int).Quo(numerator, lagrangeDenominator)
+		if quo.Int64() != 0 {
+			resultN = resultN.Add(resultN, quo)
+		} else {
+			resultNMULlagrangeDenominator := new(big.Int).Mul(resultN, lagrangeDenominator)
+			resultN = new(big.Int).Add(resultNMULlagrangeDenominator, numerator)
+
+			resultD = resultD.Add(resultD, lagrangeDenominator)
+		}
+	}
+
+	var modinvMul *big.Int
+	if resultD.Int64() != 0 {
+		modinv := new(big.Int).ModInverse(resultD, p)
+		modinvMul = new(big.Int).Mul(resultN, modinv)
+	} else {
+		modinvMul = resultN
+	}
+	r := new(big.Int).Mod(modinvMul, p)
+	return r
+}
