@@ -73,7 +73,7 @@ func unpackSharesAndI(sharesPacked [][]*big.Int) ([]*big.Int, []*big.Int) {
 }
 
 // LagrangeInterpolation calculates the secret from given shares
-func LagrangeInterpolation(sharesGiven [][]*big.Int, p *big.Int) *big.Int {
+func LagrangeInterpolation(p *big.Int, sharesGiven [][]*big.Int) *big.Int {
 	resultN := big.NewInt(int64(0))
 	resultD := big.NewInt(int64(0))
 

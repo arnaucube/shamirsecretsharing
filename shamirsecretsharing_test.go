@@ -30,7 +30,7 @@ func TestCreate(t *testing.T) {
 	sharesToUse = append(sharesToUse, shares[2])
 	sharesToUse = append(sharesToUse, shares[1])
 	sharesToUse = append(sharesToUse, shares[0])
-	secr := LagrangeInterpolation(sharesToUse, p)
+	secr := LagrangeInterpolation(p, sharesToUse)
 
 	// fmt.Print("original secret: ")
 	// fmt.Println(k)
