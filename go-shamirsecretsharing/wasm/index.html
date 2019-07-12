@@ -1,0 +1,23 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>shamirsecretsharing wasm</title>
+</head>
+<body>
+	<script src="wasm_exec.js"></script>
+	<script>
+		const go = new Go();
+		WebAssembly.instantiateStreaming(fetch('shamirsecretsharing.wasm'), go.importObject).then(function(dat) {
+		    go.run(dat.instance);
+		});
+	</script>
+	<input id="secret" value="123456789" title="secret" />
+	<input id="nShares" value="5" title="nShares" />
+	<input id="nNeededShares" value="3" title="nNeededShares" />
+	<input id="p" value="171879804367519690300554482894542984104793303095416535421575087397479872914568537681950898838967105588522810694196545562424558060609619552125935120277761650477937931034625352827489211639332858312433285611335853953593672332879461761823122965792721080501957411113790396112857552217933702513677475650967659977873" title="random p" />
+	<button onClick="callCreateShares();">Create Shares</button>
+	<textarea id="sharesResult" rows="15" style="width: 80%;">
+	</textarea>
+	<script src="index.js"></script>
+</body>
+</html>

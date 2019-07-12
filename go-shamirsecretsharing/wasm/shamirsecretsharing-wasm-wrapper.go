@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/rand"
 	"math/big"
 	"syscall/js"
 
@@ -35,11 +34,11 @@ func createShares(this js.Value, i []js.Value) interface{} {
 	if !ok {
 		println("error parsing parameter in position 2")
 	}
-	bits := 2048
-	p, err := rand.Prime(rand.Reader, bits/2) // move this out from wasm, it tooks too much time
-	if err != nil {
-		println(err.Error())
-	}
+	// bits := 2048
+	// p, err := rand.Prime(rand.Reader, bits/2) // move this out from wasm, it tooks too much time
+	// if err != nil {
+	//         println(err.Error())
+	// }
 	k, ok := new(big.Int).SetString(i[3].String(), 10)
 	if !ok {
 		println("error parsing parameter in position 3")
@@ -56,7 +55,7 @@ func createShares(this js.Value, i []js.Value) interface{} {
 	println("shares", shares)
 	sharesStr := sharesToString(shares)
 	println("sharesStr", sharesStr)
-	return nil
+	return js.ValueOf(sharesStr)
 }
 
 func sharesToString(shares [][]*big.Int) []string {
@@ -98,5 +97,5 @@ func lagrangeInterpolation(this js.Value, i []js.Value) interface{} {
 
 	secr := shamirsecretsharing.LagrangeInterpolation(p, shares)
 	println(secr.String())
-	return nil
+	return js.ValueOf(secr)
 }
