@@ -75,7 +75,7 @@ fn unpack_shares(s: Vec<[BigInt;2]>) -> (Vec<BigInt>, Vec<BigInt>) {
     (shares, is)
 }
 
-fn mod_inverse(a: BigInt, module: BigInt) -> BigInt {
+pub fn mod_inverse(a: BigInt, module: BigInt) -> BigInt {
     // TODO search biguint impl of mod_inv
     let mut mn = (module.clone(), a);
     let mut xy: (BigInt, BigInt) = (Zero::zero(), One::one());
@@ -221,6 +221,7 @@ pub fn lagrange_interpolation(p: &BigInt, shares_packed: Vec<[BigInt;2]>) -> Big
 
 #[cfg(test)]
 mod tests {
+
     use super::*;
     use std::str::FromStr;
 
