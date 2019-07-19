@@ -162,7 +162,7 @@ pub fn kalinski_inv(a: &BigInt, modulo: &BigInt) -> BigInt {
         let mut rr = r.clone();
         let _p = modulo;
 
-        for _i in 0..(k - modulo.bits() as u64) {
+        for _i in 0..*k {
             match rr.is_even() {
                 true => {
                     rr = rr >> 1;
@@ -258,21 +258,13 @@ mod tests {
         let expected2 = BigInt::from(94u64);
         assert_eq!(res2, expected2);
 
-        // Big numbers testing.
-        // C = 19.
-        // modul2 = 2^255 - 19.
-        let modul2 = BigInt::from_str("57896044618658097711785492504343953926634992332820282019728792003956564819949").unwrap();
-        let c = BigInt::from_str("19").unwrap();
-        let res3 = kalinski_inv(&c, &modul2);
-        let expected3 = BigInt::from_str("1").unwrap();
-        assert_eq!(res3, expected3);
-
-        // D = 182687704666362864775460604089535377456991567872.
-        // modul3 = 2^252 + 27742317777372353535851937790883648493.
+        // Modulo: 2^252 + 27742317777372353535851937790883648493
+        // Tested: 182687704666362864775460604089535377456991567872
+        // Expected for: inverse_mod(a, l) computed on SageMath:
+        // `7155219595916845557842258654134856828180378438239419449390401977965479867845`.
         let modul3 = BigInt::from_str("7237005577332262213973186563042994240857116359379907606001950938285454250989").unwrap();
         let d = BigInt::from_str("182687704666362864775460604089535377456991567872").unwrap();
         let res4 = kalinski_inv(&d, &modul3); 
-        println!("RES ON IMPL: {}", res4);
         let expected4 = BigInt::from_str("7155219595916845557842258654134856828180378438239419449390401977965479867845").unwrap();
         assert_eq!(expected4, res4);
     }
