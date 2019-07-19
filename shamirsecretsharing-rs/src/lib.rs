@@ -111,7 +111,6 @@ pub fn kalinski_inv(a: &BigInt, modulo: &BigInt) -> BigInt {
         let mut v = a.clone();
         let mut r = BigInt::zero();
         let mut s = BigInt::one();
-        let two = BigInt::from(2u64); 
         let mut k = 0u64;
 
         while v > BigInt::zero() {
@@ -120,13 +119,13 @@ pub fn kalinski_inv(a: &BigInt, modulo: &BigInt) -> BigInt {
                 (true, _, _, _) => {
 
                     u = u >> 1;
-                    s = &s * &two;
+                    s = s << 1;
                 },
                 // u isn't even but v is even
                 (false, true, _, _) => {
 
                     v = v >> 1;
-                    r = &r * &two;
+                    r = &r << 1;
                 },
                 // u and v aren't even and u > v
                 (false, false, true, _) => {
@@ -134,7 +133,7 @@ pub fn kalinski_inv(a: &BigInt, modulo: &BigInt) -> BigInt {
                     u = &u - &v;
                     u = u >> 1;
                     r = &r + &s;
-                    s = &s * &two;
+                    s = &s << 1;
                 },
                 // u and v aren't even and v > u
                 (false, false, false, true) => {
@@ -142,7 +141,7 @@ pub fn kalinski_inv(a: &BigInt, modulo: &BigInt) -> BigInt {
                     v = &v - &u;
                     v = v >> 1;
                     s = &r + &s;
-                    r = &r * &two;
+                    r = &r << 1;
                 },
                 (false, false, false, false) => panic!("Unexpected error has ocurred."),
             }
@@ -210,7 +209,7 @@ pub fn lagrange_interpolation(p: &BigInt, shares_packed: Vec<[BigInt;2]>) -> Big
     }
     let modinv_mul: BigInt;
     if res_d != Zero::zero() {
-        let modinv = mod_inverse(res_d, p.clone());
+        let modinv = kalinski_inv(&res_d, &p);
         modinv_mul = res_n * modinv;
     } else {
         modinv_mul = res_n;
@@ -268,13 +267,13 @@ mod tests {
         let expected3 = BigInt::from_str("1").unwrap();
         assert_eq!(res3, expected3);
 
-        /*// D = 182687704666362864775460604089535377456991567872.
+        // D = 182687704666362864775460604089535377456991567872.
         // modul3 = 2^252 + 27742317777372353535851937790883648493.
         let modul3 = BigInt::from_str("7237005577332262213973186563042994240857116359379907606001950938285454250989").unwrap();
         let d = BigInt::from_str("182687704666362864775460604089535377456991567872").unwrap();
         let res4 = kalinski_inv(&d, &modul3); 
         println!("RES ON IMPL: {}", res4);
         let expected4 = BigInt::from_str("7155219595916845557842258654134856828180378438239419449390401977965479867845").unwrap();
-        assert_eq!(expected4, res4);*/
+        assert_eq!(expected4, res4);
     }
 }
