@@ -9,3 +9,12 @@ rand = "0.6.5"
 num = "0.2.0"
 num-bigint = {version = "0.2.2", features = ["rand"]}
 num-traits = "0.2.8"
+
+[dev-dependencies]
+criterion = "0.2"
+
+# Criterion benchmarks
+[[bench]]
+path = "./benchmarks/benches.rs"
+name = "benches"
+harness = false
