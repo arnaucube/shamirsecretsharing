@@ -6,15 +6,21 @@ import (
 	"math/big"
 )
 
-const (
-	// bits = 1024
-	bits = 2048
-)
+func randBigInt(p *big.Int) (*big.Int, error) {
+	b := make([]byte, 32)
+	_, err := rand.Read(b)
+	if err != nil {
+		return nil, err
+	}
+	r := new(big.Int).SetBytes(b)
+	rp := new(big.Int).Mod(r, p)
+	return rp, nil
+}
 
 // Create calculates the secrets to share from given parameters
 // t: number of secrets needed
 // n: number of shares
-// p: random point
+// p: size of finite field
 // k: secret to share
 func Create(t, n, p, k *big.Int) (result [][]*big.Int, err error) {
 	if k.Cmp(p) > 0 {
@@ -24,11 +30,11 @@ func Create(t, n, p, k *big.Int) (result [][]*big.Int, err error) {
 	var basePolynomial []*big.Int
 	basePolynomial = append(basePolynomial, k)
 	for i := 0; i < int(t.Int64())-1; i++ {
-		randPrime, err := rand.Prime(rand.Reader, bits/2)
+		x, err := randBigInt(p)
 		if err != nil {
 			return result, err
 		}
-		basePolynomial = append(basePolynomial, randPrime)
+		basePolynomial = append(basePolynomial, x)
 	}
 
 	//calculate shares, based on the basePolynomial

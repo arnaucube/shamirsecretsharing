@@ -21,7 +21,7 @@ Call the library from javascript:
 // Create shares from a secret
 // nNeededShares: number of secrets needed
 // nShares: number of shares
-// p: random point
+// p: size of finite field
 // k: secret to share
 createShares(nNeededShares, nShares, p, k);
 ```
@@ -29,12 +29,12 @@ createShares(nNeededShares, nShares, p, k);
 ## Usage from Go
 ```go
 // define secret to share
-k, ok := new(big.Int).SetString("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890", 10)
+k, ok := new(big.Int).SetString("12345678901234567890123456789012345678", 10)
 assert.True(t, ok)
 
-// define random prime
-p, err := rand.Prime(rand.Reader, bits/2)
-assert.Nil(t, err)
+// define the field
+p, ok := new(big.Int).SetString("170141183460469231731687303715884105727", 10)
+assert.True(t, ok)
 
 // define how many shares want to generate
 nShares := big.NewInt(int64(6))

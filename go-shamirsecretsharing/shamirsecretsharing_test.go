@@ -2,7 +2,6 @@ package shamirsecretsharing
 
 import (
 	"bytes"
-	"crypto/rand"
 	"math/big"
 	"testing"
 
@@ -10,11 +9,12 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	k, ok := new(big.Int).SetString("123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890", 10)
+	k, ok := new(big.Int).SetString("12345678901234567890123456789012345678", 10)
 	assert.True(t, ok)
 
-	p, err := rand.Prime(rand.Reader, bits/2)
-	assert.Nil(t, err)
+	// 2 ** 127 - 1
+	p, ok := new(big.Int).SetString("170141183460469231731687303715884105727", 10)
+	assert.True(t, ok)
 
 	nShares := big.NewInt(int64(6))
 	nNeededShares := big.NewInt(int64(3))

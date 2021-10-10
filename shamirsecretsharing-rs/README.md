@@ -4,7 +4,7 @@ Shamir's Secret Sharing in Rust
 
 ## Usage
 ```rust
-// create 6 shares from k, given the rand p
+// create 6 shares from k, on the Fp
 // where to recover will be needed 3 shares
 let s = create(3, 6, &p, &k);
 
